@@ -14,7 +14,7 @@ set -e
 ##########
 # Global #
 ##########
-VERSION=0.2
+VERSION=0.2.1
 USAGE_MESSAGE="\
 Usage: $(basename $0) [ -V | -h ] 
 
@@ -32,36 +32,29 @@ reverseOrder=0
 uppercase=0
 
 # Process options
-function checkForOptions(){
+function checkForOptions() {
     # Run until $1 be null / empty
-    while [ ! -z "$1" ];
-    do
+    while [ ! -z "$1" ]; do
         case "$1" in
-            -V | --version)
-                echo "$(basename $0) v$VERSION"
-                exit 0;
+        -V | --version)
+            echo "$(basename $0) v$VERSION"
+            exit 0
             ;;
-            -h | --help)
-                echo "$USAGE_MESSAGE" # Use double quotes to echo line breaks
-                exit 0;
+        -h | --help)
+            echo "$USAGE_MESSAGE" # Use double quotes to echo line breaks
+            exit 0
             ;;
-            -s | --sort)
-                sortList=1
-            ;;
-            -r | --reverse)
-                reverseOrder=1
-            ;;
-            -u | --uppercase)
-                uppercase=1
-            ;;
-            *)
-                echo "Unknown options: \"$1\"" 
-                exit 1;
+        -s | --sort) sortList=1         ;;
+        -r | --reverse) reverseOrder=1  ;;
+        -u | --uppercase) uppercase=1   ;;
+        *)
+            echo "Unknown options: \"$1\""
+            exit 1
             ;;
         esac
 
         shift # Move $2 to $1, interating through all options user passed
-    done    
+    done
 }
 
 checkForOptions $@
@@ -73,20 +66,12 @@ checkForOptions $@
 # Print users
 users=$(cut -d : -f 1,5 /etc/passwd | tr : \\t | tr -d ,)
 
-if [ "$sortList" = 1 ]
-then
-    users=$(echo "$users" | sort)
-fi
+# if sortList == 1... 
+test "$sortList" = 1 && users=$(echo "$users" | sort)
 
-if [ "$reverseOrder" = 1 ]
-then
-    users=$(echo "$users" | tac)
-fi
+test "$reverseOrder" = 1 && users=$(echo "$users" | tac)
 
-if [ "$uppercase" = 1 ]
-then
-    users=$(echo "$users" | tr a-z A-Z)
-fi
+test "$uppercase" = 1 && users=$(echo "$users" | tr a-z A-Z)
 
 # Finally print user list
 echo "$users"
