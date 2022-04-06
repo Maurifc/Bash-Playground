@@ -1,29 +1,35 @@
 #!/bin/bash
-set -e
 # list_user.sh
 #
 # List all system users
 # (Basically reading /etc/passwd file)
+#
+# Version 0.3.1: Add -d <delimiter> option
+#
+# Version 0.2.1: Refactoring to improve readability
 #
 # Version 0.2: Add -r, --reverse, -u and --uppercase
 #   Add support to multi options
 #
 # Mauri F Carmo, April 2022
 #
+set -e
 
 ##########
 # Global #
 ##########
-VERSION=0.2.1
+VERSION=0.3.1
 USAGE_MESSAGE="\
-Usage: $(basename $0) [ -V | -h ] 
+Usage: $(basename $0) [ -V | -h | -u | -d <delimiter> | -V | -h ] 
 
 -s, --sort          Print user list in alphatical order
 -r, --reverse       Print list in reverse order
 -u, --uppercase     Print list in uppercase characters
+-d, --delimiter     Print list in uppercase characters
 -V, --version       Show script version
 -h, --help          Show help and exit\
 "
+delimiter="\\t"
 #########
 # Flags #
 #########
@@ -47,6 +53,16 @@ function checkForOptions() {
         -s | --sort) sortList=1         ;;
         -r | --reverse) reverseOrder=1  ;;
         -u | --uppercase) uppercase=1   ;;
+        -d | --delimiter ) 
+            shift # Shift arguments to get new delimiter
+            delimiter=$1
+
+            if [ -z $delimiter ]
+            then
+                echo "Missing argument for -d option"
+                exit 1
+            fi
+            ;;
         *)
             echo "Unknown options: \"$1\""
             exit 1
@@ -64,7 +80,7 @@ checkForOptions $@
 ########
 
 # Print users
-users=$(cut -d : -f 1,5 /etc/passwd | tr : \\t | tr -d ,)
+users=$(cut -d : -f 1,5 /etc/passwd | tr : "$delimiter" | tr -d ,)
 
 # if sortList == 1... 
 test "$sortList" = 1 && users=$(echo "$users" | sort)
