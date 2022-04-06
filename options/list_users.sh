@@ -29,13 +29,13 @@ Usage: $(basename $0) [ -V | -h | -u | -d <delimiter> | -V | -h ]
 -V, --version       Show script version
 -h, --help          Show help and exit\
 "
-delimiter="\\t"
 #########
 # Flags #
 #########
 sortList=0
 reverseOrder=0
 uppercase=0
+delimiter="\\t"
 
 # Process options
 function checkForOptions() {
